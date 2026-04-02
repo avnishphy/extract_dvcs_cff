@@ -1,0 +1,135 @@
+paths:
+  output_dir: outputs/gpd_example
+  checkpoint_dir: outputs/gpd_example/checkpoints
+  artifact_dir: outputs/gpd_example/artifacts
+
+encoder:
+  input_dim: 4
+  hidden_dim: 64
+  output_dim: 96
+  use_process_embedding: false
+  use_flavor_embedding: false
+  use_observable_embedding: false
+
+backbone:
+  input_dim: 96
+  blocks:
+    - width: 128
+      depth: 2
+      activation: gelu
+      dropout: 0.05
+      normalization: layernorm
+      residual_scale: 1.0
+      checkpoint: false
+    - width: 128
+      depth: 2
+      activation: silu
+      dropout: 0.03
+      normalization: layernorm
+      residual_scale: 1.0
+      checkpoint: false
+  final_dim: 128
+
+heads:
+  channels: [H, E, Htilde, Etilde]
+  shared_tower: true
+  tower_hidden_dim: 96
+  tower_depth: 2
+  activation: gelu
+  dropout: 0.02
+  endpoint_suppression_power: 0.4
+  support_clamp_margin: 1.0e-6
+  auxiliary:
+    enable_cff_head: true
+    cff_output_dim: 8
+    enable_mellin_head: true
+    mellin_output_dim: 8
+    enable_observable_proxy_head: false
+    observable_proxy_output_dim: 0
+
+evolution:
+  enabled: true
+  mode: differentiable
+  reference_q2: 2.0
+  channel_anomalous_dims: [0.18, 0.20, 0.16, 0.16]
+  surrogate_hidden_dim: 64
+  surrogate_depth: 2
+  clamp_log_q2_ratio: 8.0
+  cache_kernels: true
+
+constraints:
+  enforce_support: true
+  enforce_forward_limit: true
+  enforce_sum_rules: true
+  enforce_polynomiality: true
+  enforce_positivity: true
+  enforce_endpoint_suppression: true
+  enforce_smoothness: true
+  enforce_symmetry: false
+  positivity_margin: 0.0
+  smoothness_strength: 1.0e-4
+  endpoint_power: 0.25
+  polynomiality_max_moment: 2
+  polynomiality_fit_degree: 3
+
+convolution:
+  x_grid_size: 129
+  pv_eps: 1.0e-5
+  use_analytic_singularity_term: true
+  cache_grids: true
+  integration_fallback: exclude-neighborhood
+
+observables:
+  enabled_observables:
+    - cross_section_uu
+    - cross_section_difference_lu
+    - beam_spin_asymmetry
+    - beam_charge_asymmetry
+    - double_spin_asymmetry
+
+losses:
+  adaptive_weighting: true
+  adaptive_beta: 0.95
+  adaptive_eps: 1.0e-8
+
+dataset:
+  experiments: [HERMES, CLAS, Hall A, H1, COMPASS]
+  include_lattice_auxiliary: false
+  include_structure_function_auxiliary: false
+  strict_missing_observable_handling: true
+  observable_mask_fill: 0.0
+  use_covariance_when_available: true
+
+replicas:
+  enabled: true
+  n_replicas: 5
+  seed: 1234
+  train_separate_models: false
+
+runtime:
+  seed: 2026
+  device: auto
+  precision: fp32
+  use_compile: false
+  compile_mode: default
+  use_checkpointing: false
+  use_vmap: true
+  ddp_enabled: false
+
+training:
+  epochs: 8
+  batch_size: 64
+  validation_split: 0.2
+  learning_rate: 3.0e-4
+  weight_decay: 1.0e-4
+  grad_clip_norm: 1.0
+  early_stopping_patience: 5
+  num_workers: 0
+  pin_memory: false
+  checkpoint_every: 2
+  resume_from: null
+
+baselines:
+  enable_cff_only: true
+  enable_parametric_gpd: true
+  enable_pure_data_fit: true

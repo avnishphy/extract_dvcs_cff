@@ -1,0 +1,32 @@
+# Example config for dataset ingestion
+paths:
+  data_dir: data
+  output_dir: outputs
+  config_dir: configs
+  partons_path: null
+  apfel_path: null
+  lhapdf_path: null
+physics_constraints:
+  support_x: true
+  forward_limit: true
+  qcd_evolution: true
+  dglap_erbl: true
+  polynomiality: false
+  positivity: false
+uncertainty:
+  handle_stat: true
+  handle_sys: true
+  handle_cov: false
+  ensemble_size: 1
+benchmark:
+  model_name: KM15
+  seed: 42
+ingestion:
+  dataset_files: []
+  kinematic_filters: null
+  gpddatabase_root: ../gpddatabase
+  gpddatabase_data_type: DVCS
+  gpddatabase_collaboration: null
+  gpddatabase_uuid: null
+  include_pseudodata: false
+  strict_kinematics: true

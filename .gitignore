@@ -1,0 +1,27 @@
+# .gitignore for extract_dvcs_cff
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+.eggs/
+.env
+.venv
+venv/
+build/
+dist/
+outputs/
+logs/
+.DS_Store
+.ipynb_checkpoints/
+.cache/
+.mypy_cache/
+.pytest_cache/
+.pre-commit-config.yaml
+*.sqlite3
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
